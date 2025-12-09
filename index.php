@@ -1,45 +1,57 @@
+<?php
+include 'config.php';
+session_start();
+
+if (isset($_SESSION['username'])) {
+    header("Location: login.php");
+}
+
+if (isset($_POST['submit'])) {
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $password = hash('sha256', $_POST['password']); // password di-hash menggunakan SHA-256
+
+    $sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $_SESSION['username'] = $row['username'];
+        header("Location: index.php");
+        exit();
+    } else {
+        echo "<script>alert('Email atau password Anda salah. Silakan coba lagi!')</script>";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Niagahoster Tutorial</title>
 </head>
 <body>
+<div class="container">
+    <form action="" method="POST" class="login-email">
+        <p class="login-text" style="font-size: 2rem; font-weight: 800;">Login</p>
+        </div>
+        <div class="input-group">
+            <input type="email" placeholder="Email" name="email" required>
+        </div>
+        <div class="input-group">
+            <input type="password" placeholder="Password" name="password" required>
+        </div>
+        <div class="input-group">
+            <button name="submit" class="btn">Login</button>
+        </div>
 
-<h2>SI Sekolah | Data Siswa</h2>
-<br>
-<a href="tambah.php">+ Tambah Data</a>
-<br>
-
-<table border="1">
-    <tr>
-        <th>No</th>
-        <th>Nama</th>
-        <th>NIS</th>
-        <th>Alamat</th>
-        <th>Opsi</th>
-    </tr>
-
-    <?php
-    include 'koneksi.php';
-    $no = 1;
-    $query = mysqli_query($koneksi, "select * from siswa");
-    while($data = mysqli_fetch_array($query)){
-    ?>
-    <tr>
-        <td><?php echo $no++; ?></td>
-        <td><?php echo $data['nama']; ?></td>
-        <td><?php echo $data['nis']; ?></td>
-        <td><?php echo $data['alamat']; ?></td>
-        <td>
-            <a href="edit.php?id=<?php echo $data['id']; ?>">EDIT</a>
-            <a href="hapus.php?id=<?php echo $data['id']; ?>">HAPUS</a>
-        </td>
-    </tr>
-    <?php
-    }
-    ?>
-
-</table>
-
+        <p class="login-register-text">
+            Anda belum punya akun? <a href="register.php">Register</a>
+        </p>
+    </form>
+</div>
 </body>
 </html>
